@@ -1,0 +1,313 @@
+<script>
+"use strict";
+
+/* ---------- Language state ---------- */
+let lang = 'ar';
+try {
+  const saved = localStorage.getItem('az-portfolio-lang');
+  if (saved === 'ar' || saved === 'en') lang = saved;
+} catch(e){ /* storage unavailable — keep default */ }
+
+const lockIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+const checkIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#217C74" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- Per-project coded visuals ---------- */
+const vizLabels = {
+  scrFlow:{
+    ar:["الطلب","الاستلام والفرز","التقييم","بوابة قرار التوريد","التخصيص / التعاقد","التسليم","تأكيد استلام المشروع","الإغلاق"],
+    en:["Request","Intake","Assessment","Sourcing Gate","Allocation / Contracting","Delivery","Project Receipt Confirmation","Closure"]
+  },
+  scrBranch:{ar:{lbl:"مسارا التلبية:",a:"توفير داخلي In-source",b:"استئجار خارجي Out-source"},en:{lbl:"Fulfillment paths:",a:"In-source",b:"Out-source"}},
+  dash:{
+    ar:{status:"حالة العقود",active:"نشط · قرب الانتهاء · منتهٍ",expiry:"توزيع الانتهاء",addendum:"نشاط الملاحق",dq:"مؤشر جودة البيانات",masked:"مموّه — نسخة عامة",portfolio:"توزيع المحفظة",refresh:"يُحدَّث مع كل تحديث للبيانات"},
+    en:{status:"Contract Status",active:"Active · Near expiry · Expired",expiry:"Expiry Distribution",addendum:"Addendum Activity",dq:"Data Quality Indicator",masked:"Masked — public view",portfolio:"Portfolio Breakdown",refresh:"Updated with each data refresh"}
+  },
+  cmp:{
+    ar:{a:"الاستئجار — التعرض المتكرر",aItems:["إنفاق إيجاري متكرر","مرونة تعاقدية","اعتماد على التوافر الخارجي"],b:"التملك — الاعتبارات",bItems:["كلفة التملك والصيانة","الاستخدام الفعلي","التوافر والقيمة المتبقية"],banner:"يتطلب تحققًا ماليًا وتشغيليًا نهائيًا"},
+    en:{a:"Rent — Recurring Exposure",aItems:["Recurring rental spend","Contractual flexibility","Dependence on external availability"],b:"Own — Considerations",bItems:["Ownership & maintenance cost","Actual utilization","Availability & residual value"],banner:"Final financial & operational validation required"}
+  },
+  pipe:{
+    ar:["مستخرجات Oracle","التحقق من البنية","التنظيف والتوحيد","فحوصات الجودة","بيانات مجهزة","Power BI"],
+    en:["Oracle Exports","Structure Validation","Cleaning & Standardization","Quality Checks","Prepared Dataset","Power BI"]
+  }
+};
+
+function arrowSpan(){ return `<span class="flow-arrow" aria-hidden="true">${lang==='ar'?'←':'→'}</span>`; }
+
+function vizFor(p){
+  const badge = `<span class="viz-badge">${esc(ui[lang].anonBadge)}</span>`;
+  if (p.id === 'scr'){
+    const steps = vizLabels.scrFlow[lang].map((s,i)=>`<span class="flow-step${i===3?' gate':''}">${esc(s)}</span>`).join(arrowSpan());
+    const b = vizLabels.scrBranch[lang];
+    return `<div class="viz"><div class="viz-frame">${badge}
+      <div class="flow">${steps}</div>
+      <div class="flow-branch"><span class="branch-lbl">${esc(b.lbl)}</span><span class="branch-chip">${esc(b.a)}</span><span class="branch-chip">${esc(b.b)}</span></div>
+    </div></div>`;
+  }
+  if (p.id === 'contracts'){
+    const d = vizLabels.dash[lang];
+    return `<div class="viz"><div class="viz-frame">${badge}
+      <div class="mini-dash">
+        <div class="md-tile"><div class="md-lbl">${esc(d.status)}</div><div class="md-val">▮▮▮▮▯</div><div class="md-lbl" style="text-transform:none;margin-top:3px">${esc(d.active)}</div></div>
+        <div class="md-tile"><div class="md-lbl">${esc(d.expiry)}</div><div class="md-bar"><i style="height:35%"></i><i style="height:55%"></i><i style="height:80%" class="warn"></i><i style="height:45%"></i><i style="height:65%"></i><i style="height:30%"></i></div></div>
+        <div class="md-tile"><div class="md-lbl">${esc(d.addendum)}</div><div class="md-bar"><i style="height:30%" class="warn"></i><i style="height:50%" class="warn"></i><i style="height:75%" class="warn"></i><i style="height:90%" class="warn"></i></div></div>
+        <div class="md-tile"><div class="md-lbl">${esc(d.dq)}</div><div class="md-track"><span class="md-fill" style="display:block;width:72%"></span></div><div class="md-lbl" style="text-transform:none;margin-top:5px">${esc(d.masked)}</div></div>
+        <div class="md-tile" style="grid-column:span 2"><div class="md-lbl">${esc(d.portfolio)}</div><div class="md-bar"><i style="height:85%"></i><i style="height:60%"></i><i style="height:48%"></i><i style="height:40%"></i><i style="height:26%"></i><i style="height:20%"></i><i style="height:14%"></i></div></div>
+      </div>
+      <div class="md-lbl" style="margin-top:9px;text-transform:none">${esc(d.refresh)}</div>
+    </div></div>`;
+  }
+  if (p.id === 'rent-vs-own'){
+    const c = vizLabels.cmp[lang];
+    return `<div class="viz"><div class="viz-frame">${badge}
+      <div class="cmp">
+        <div class="cmp-col"><h5>${esc(c.a)}</h5><ul>${c.aItems.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+        <div class="cmp-col"><h5>${esc(c.b)}</h5><ul>${c.bItems.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+        <div class="cmp-banner">${esc(c.banner)}</div>
+      </div>
+    </div></div>`;
+  }
+  if (p.id === 'oracle'){
+    const steps = vizLabels.pipe[lang].map(s=>`<span class="flow-step">${esc(s)}</span>`).join(arrowSpan());
+    return `<div class="viz"><div class="viz-frame">${badge}<div class="flow">${steps}</div></div></div>`;
+  }
+  return '';
+}
+
+/* ---------- Render ---------- */
+function render(){
+  const t = ui[lang];
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang==='ar' ? 'rtl' : 'ltr';
+  document.title = t.pageTitle;
+  const md = document.querySelector('meta[name="description"]');
+  if (md) md.setAttribute('content', t.metaDesc);
+  document.getElementById('btn-ar').classList.toggle('active', lang==='ar');
+  document.getElementById('btn-en').classList.toggle('active', lang==='en');
+  document.getElementById('btn-ar').setAttribute('aria-pressed', lang==='ar');
+  document.getElementById('btn-en').setAttribute('aria-pressed', lang==='en');
+  document.getElementById('modalClose').setAttribute('aria-label', t.close);
+
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t[el.dataset.i18n] || ''; });
+
+  const nav = document.getElementById('mainNav');
+  nav.setAttribute('aria-label', t.navAria);
+  const coreNav = ['projects','experience','contact'];
+  nav.innerHTML = Object.entries(t.nav).map(([k,v])=>`<a href="#${k}"${coreNav.includes(k)?' class="nav-core"':''}>${esc(v)}</a>`).join('');
+  const mm = document.getElementById('mobileMenuList');
+  if (mm) mm.innerHTML = Object.entries(t.nav).map(([k,v])=>`<a href="#${k}">${esc(v)}</a>`).join('');
+  const mb = document.getElementById('menuBtn');
+  if (mb) mb.setAttribute('aria-label', t.menuOpen);
+
+  document.getElementById('proofGrid').innerHTML = proof.map(p=>`
+    <div class="proof-item"><div class="proof-num">${esc(p.num[lang])}</div><div class="proof-label">${esc(p.label[lang])}</div></div>
+  `).join('');
+
+  const arrow = lang==='ar' ? '←' : '→';
+  const fp = projects.find(p=>p.flagship);
+  document.getElementById('flagshipWrap').innerHTML = `
+    <article class="flagship project-card" data-card="${fp.id}">
+      <div class="card-top">
+        <span class="flagship-badge">${esc(t.flagship)}</span>
+        <span class="card-tag">${esc(fp.tag[lang])}</span>
+        <span class="card-status">${esc(fp.status[lang])}</span>
+      </div>
+      <h3>${esc(fp.title[lang])}</h3>
+      <p class="p-sum">${esc(fp.summary[lang])}</p>
+      ${vizFor(fp)}
+      <div class="p-role"><b>${esc(t.myRole)}</b>${esc(fp.role[lang])}</div>
+      <span class="metric">${lockIcon}<span>${esc(fp.metric[lang])}</span></span>
+      <button type="button" class="open-case-study" data-project="${fp.id}" id="card-${fp.id}"
+        aria-haspopup="dialog" aria-controls="modalRoot" aria-expanded="false">${esc(t.open)} ${arrow}</button>
+    </article>`;
+
+  document.getElementById('projectGrid').innerHTML = projects.filter(p=>!p.flagship).map(p=>`
+    <article class="pcard project-card" data-card="${p.id}">
+      <div class="card-top"><span class="card-tag">${esc(p.tag[lang])}</span><span class="card-status">${esc(p.status[lang])}</span></div>
+      <h3>${esc(p.title[lang])}</h3>
+      <p class="p-sum">${esc(p.summary[lang])}</p>
+      ${vizFor(p)}
+      <div class="p-role"><b>${esc(t.myRole)}</b>${esc(p.role[lang])}</div>
+      <span class="metric">${lockIcon}<span>${esc(p.metric[lang])}</span></span>
+      <button type="button" class="open-case-study" data-project="${p.id}" id="card-${p.id}"
+        aria-haspopup="dialog" aria-controls="modalRoot" aria-expanded="false">${esc(t.open)} ${arrow}</button>
+    </article>
+  `).join('');
+
+  document.getElementById('methodWrap').innerHTML = methodology.map((m,i)=>`
+    <div class="method-step"><div class="method-idx" aria-hidden="true">${i+1}</div><h3>${esc(m.t[lang])}</h3><p>${esc(m.d[lang])}</p></div>
+  `).join(`<span class="method-arrow" aria-hidden="true">${lang==='ar'?'←':'→'}</span>`);
+
+  document.getElementById('journeyWrap').innerHTML = journey.map(j=>`
+    <article class="journey-item">
+      <div class="journey-period">${esc(j.period[lang])}</div>
+      <div class="journey-body">
+        <h3>${esc(j.t[lang])}</h3>
+        <div class="journey-org">${esc(j.org[lang])}</div>
+        <ul>${j.d[lang].map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+      </div>
+    </article>
+  `).join('');
+
+  document.getElementById('skillsWrap').innerHTML = skillGroups.map(g=>`
+    <div class="skill-card"><h3>${esc(g.t[lang])}</h3><div class="chips">${g.items[lang].map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div></div>
+  `).join('');
+
+  document.getElementById('eduWrap').innerHTML = `
+    <div class="edu-card"><h3>${esc(education.degree.t[lang])}</h3><p class="edu-degree">${esc(education.degree.body[lang])}</p></div>
+    <div class="edu-card"><h3>${esc(education.certs.t[lang])}</h3><ul>${education.certs.items[lang].map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
+
+  document.querySelectorAll('.open-case-study').forEach(btn=>{
+    btn.addEventListener('click', e=>{ e.stopPropagation(); openModal(btn.dataset.project); });
+  });
+  document.querySelectorAll('.project-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      if (window.getSelection && String(window.getSelection())) return;
+      openModal(card.dataset.card);
+    });
+  });
+
+  if (modalOpenId) fillModal(modalOpenId);
+}
+
+/* ---------- Modal + focus trap + hash routing ---------- */
+let modalOpenId = null;
+let lastTrigger = null;
+const overlay = document.getElementById('overlay');
+const modalRoot = document.getElementById('modalRoot');
+
+function fillModal(id){
+  const p = projects.find(x=>x.id===id);
+  if (!p) return;
+  const L = ui[lang].labels;
+  document.getElementById('modalTag').textContent = p.tag[lang];
+  document.getElementById('modalStatus').textContent = p.status[lang];
+  document.getElementById('modalTitle').textContent = p.title[lang];
+  document.getElementById('modalBody').innerHTML = `
+    <div class="block"><h3>${esc(L.context)}</h3><p>${esc(p.context[lang])}</p></div>
+    <div class="block"><h3>${esc(L.challenge)}</h3><p>${esc(p.challenge[lang])}</p></div>
+    <div class="block"><h3>${esc(L.role)}</h3><p>${esc(p.role[lang])}</p></div>
+    <div class="block"><h3>${esc(L.scope)}</h3><ul>${p.scope[lang].map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+    <div class="block"><h3>${esc(L.approach)}</h3><ul>${p.approach[lang].map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+    <div class="block"><h3>${esc(L.findings)}</h3><div class="findings-grid">${p.findings[lang].map(x=>`<div class="finding">${checkIcon}<span>${esc(x)}</span></div>`).join('')}</div></div>
+    <div class="block"><h3>${esc(L.solution)}</h3><p>${esc(p.solution[lang])}</p></div>
+    <div class="block"><h3>${esc(L.tools)}</h3><div class="chips">${p.tools[lang].map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div></div>
+    <div class="block"><h3>${esc(L.deliverables)}</h3><p>${esc(p.deliverables[lang])}</p></div>
+    <div class="block"><h3>${esc(L.outcome)}</h3><p>${esc(p.outcome[lang])}</p></div>
+    <div class="block"><p class="conf-mini">${lockIcon}<span>${esc(p.conf[lang])}</span></p></div>`;
+}
+
+function openModal(id, fromHash){
+  const p = projects.find(x=>x.id===id);
+  if (!p) return;
+  lastTrigger = document.getElementById('card-'+id) || null;
+  modalOpenId = id;
+  fillModal(id);
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (lastTrigger) lastTrigger.setAttribute('aria-expanded','true');
+  document.querySelectorAll('body > header, body > main, body > footer').forEach(el=>{
+    if ('inert' in el) el.inert = true; else el.setAttribute('aria-hidden','true');
+  });
+  if (!fromHash){
+    try { history.replaceState(null, '', '#'+id); } catch(e){}
+  }
+  document.getElementById('modalClose').focus();
+}
+
+function closeModal(){
+  if (!modalOpenId) return;
+  modalOpenId = null;
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  document.querySelectorAll('body > header, body > main, body > footer').forEach(el=>{
+    if ('inert' in el) el.inert = false; else el.removeAttribute('aria-hidden');
+  });
+  document.querySelectorAll('.open-case-study[aria-expanded="true"]').forEach(b=>b.setAttribute('aria-expanded','false'));
+  try {
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  } catch(e){}
+  if (lastTrigger) { lastTrigger.focus(); lastTrigger = null; }
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+overlay.addEventListener('click', e=>{ if (e.target === overlay) closeModal(); });
+
+document.addEventListener('keydown', e=>{
+  if (!modalOpenId) return;
+  if (e.key === 'Escape'){ closeModal(); return; }
+  if (e.key === 'Tab'){
+    const focusables = modalRoot.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!focusables.length) return;
+    const first = focusables[0], last = focusables[focusables.length-1];
+    if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  }
+});
+
+function handleHash(){
+  const id = location.hash.replace('#','');
+  if (projects.some(p=>p.id===id)) openModal(id, true);
+}
+window.addEventListener('hashchange', handleHash);
+
+/* ---------- Language toggle ---------- */
+function setLang(l){
+  lang = l;
+  try { localStorage.setItem('az-portfolio-lang', l); } catch(e){}
+  render();
+}
+document.getElementById('btn-ar').addEventListener('click', ()=>setLang('ar'));
+document.getElementById('btn-en').addEventListener('click', ()=>setLang('en'));
+
+/* ---------- Mobile menu ---------- */
+const menuBtn = document.getElementById('menuBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+function setMenu(open){
+  mobileMenu.classList.toggle('open', open);
+  menuBtn.setAttribute('aria-expanded', String(open));
+  menuBtn.setAttribute('aria-label', open ? ui[lang].menuClose : ui[lang].menuOpen);
+  if (open) mobileMenu.querySelector('a')?.focus();
+}
+menuBtn.addEventListener('click', ()=> setMenu(!mobileMenu.classList.contains('open')));
+mobileMenu.addEventListener('click', e=>{ if (e.target.closest('a')) setMenu(false); });
+document.addEventListener('keydown', e=>{
+  if (e.key === 'Escape' && mobileMenu.classList.contains('open') && !modalOpenId){ setMenu(false); menuBtn.focus(); }
+});
+document.addEventListener('click', e=>{
+  if (mobileMenu.classList.contains('open') && !e.target.closest('#mobileMenu') && !e.target.closest('#menuBtn')) setMenu(false);
+});
+
+/* ---------- Share portfolio (Web Share API + clipboard fallback) ---------- */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._h);
+  showToast._h = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+async function sharePortfolio(){
+  const url = location.origin.startsWith('http') ? (location.origin + location.pathname) : location.href;
+  const payload = { title: ui[lang].name + ' — ' + ui[lang].unifiedTitle, text: ui[lang].name + ' — ' + ui[lang].unifiedTitle, url };
+  if (navigator.share){
+    try { await navigator.share(payload); return; } catch(e){ if (e && e.name === 'AbortError') return; }
+  }
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText){ await navigator.clipboard.writeText(url); }
+    else {
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    }
+    showToast(ui[lang].shareCopied);
+  } catch(e){ showToast(ui[lang].shareFail); }
+}
+document.querySelectorAll('.share-btn').forEach(b=>b.addEventListener('click', sharePortfolio));
+
+render();
+handleHash();
+setMenu(false);
+</script>
+</body>
+</html>

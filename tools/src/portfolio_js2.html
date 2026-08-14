@@ -1,0 +1,215 @@
+<script>
+"use strict";
+
+const projects = [
+  {
+    id:"scr",
+    flagship:true,
+    tag:{ar:"إعادة هندسة العمليات",en:"Process Re-engineering"},
+    status:{ar:"تحليل ونموذج تشغيلي مقترح",en:"Analysis & Proposed Operating Model"},
+    title:{ar:"تحليل وإعادة تصميم عملية طلبات المعدات (SCR)",en:"SCR Equipment Request Process Analysis & Redesign"},
+    summary:{
+      ar:"تحليل شامل لدورة طلبات المعدات من لحظة الطلب حتى الإغلاق، مبني على عامين من البيانات التشغيلية، مع توثيق الفجوات وتصميم نموذج تشغيل مستهدف مقترح وبوابة قرار للتوريد.",
+      en:"An end-to-end analysis of the equipment request cycle from submission to closure, built on two years of operational data, documenting gaps and designing a proposed Target Operating Model with a Sourcing Gate."
+    },
+    metric:{ar:"+1,300 سجل طلب · 24 شهرًا",en:"1,300+ request records · 24 months"},
+    role:{
+      ar:"حللتُ البيانات التشغيلية والوثائق والمقابلات الميدانية، ووثّقتُ الوضع الراهن، وحددتُ الفجوات، وصممتُ نموذج التشغيل المستهدف المقترح وبوابة قرار التوريد وخارطة طريق مرحلية للتنفيذ.",
+      en:"Analyzed operational data, documentation, and field interviews; documented the AS-IS process; identified control and data gaps; and designed the proposed Target Operating Model, Sourcing Gate, and phased implementation roadmap."
+    },
+    context:{
+      ar:"إدارة معدات وأصول تخدم مشاريع في مدن متعددة، تمر فيها طلبات المعدات (SCR) بدورة تمتد من طلب المشروع حتى التلبية عبر مسارَي التوفير الداخلي أو الاستئجار الخارجي.",
+      en:"An equipment and asset management division serving projects across multiple cities, where equipment requests (SCR) run from project submission to fulfillment through either an in-source or an out-source path."
+    },
+    challenge:{
+      ar:"دورة طلبات مجزأة بلا بوابة قرار للتوريد، مع فجوات جوهرية في وضوح المسؤولية وملكية العملية وبيانات التسليم والأولوية وقياس مستوى الخدمة، وأزمنة دورة طويلة الذيل يصعب تتبعها.",
+      en:"A fragmented request cycle with no sourcing decision gate, material gaps in accountability and process ownership, delivery data, priority, and SLA measurement, and long-tailed cycle times that were hard to track."
+    },
+    scope:{
+      ar:["أكثر من 1,300 سجل طلب.","بيانات تشغيلية تغطي 24 شهرًا.","أكثر من 3,000 وحدة معدات مطلوبة.","مشاريع موزعة على مدن متعددة."],
+      en:["1,300+ request records.","Operational data covering 24 months.","3,000+ requested equipment units.","Projects distributed across multiple cities."]
+    },
+    approach:{
+      ar:["توثيق الوضع الراهن (AS-IS) بتثليث الأدلة: الوثائق الرسمية، المقابلات الميدانية، والبيانات التشغيلية.","قياس أزمنة الدورة والاختناقات الفعلية من السجلات نفسها لا من الانطباعات.","رسم خريطة تدفق القيمة وتحليل الفجوات في وضوح المسؤولية وملكية العملية والبيانات والقياس.","تصميم الوضع المستهدف (TO-BE) بنموذج حالات ومسؤوليات واضح وبوابة قرار للتوريد.","مصفوفة قرار موزونة لمقارنة مسارات التنفيذ، مع مقترح معماري على Power Platform."],
+      en:["Documented the AS-IS state by triangulating official documentation, field interviews, and operational data.","Measured real cycle times and bottlenecks from the records themselves, not impressions.","Built a value stream map and a gap analysis across accountability, process ownership, data, and measurement.","Designed the TO-BE state with a clear state-and-ownership model and a Sourcing Gate.","Used a weighted decision matrix to compare implementation paths, with a Power Platform architecture proposal."]
+    },
+    findings:{
+      ar:["وسيط زمن الدورة قرابة 10 أيام.","المئين التسعون (P90) يتجاوز 63 يومًا.","فجوات جوهرية في وضوح المسؤولية وملكية العملية وبيانات التسليم والأولوية وقياس SLA.","تناقضات في مؤشرات مستوى الخدمة وُثّقت قبل اعتمادها."],
+      en:["Median cycle time of roughly 10 days.","P90 cycle time exceeding 63 days.","Material gaps in accountability and process ownership, delivery data, priority, and SLA measurement.","Inconsistencies in SLA figures documented before adoption."]
+    },
+    solution:{
+      ar:"نموذج تشغيل مستهدف مقترح بنموذج حالات ومسؤوليات واضح، مع تصميم بوابة قرار توريد تهدف إلى معالجة أكبر فجوة حوكمة تم تحديدها في دورة الطلبات الحالية، ومقترح معماري يبدأ بـ SharePoint ضمن Power Platform (على مستوى التصميم)، وخارطة طريق تنفيذ مرحلية.",
+      en:"A proposed Target Operating Model with a clear state-and-ownership design, a Sourcing Gate intended to address the largest identified governance gap in the current request cycle, a SharePoint-first Power Platform architecture proposal (design level), and a phased implementation roadmap."
+    },
+    tools:{ar:["Power BI","Python","Excel","رسم العمليات / VSM","Power Platform — تصميم معماري"],en:["Power BI","Python","Excel","Process Mapping / VSM","Power Platform — architecture design"]},
+    deliverables:{
+      ar:"خرائط AS-IS / TO-BE، خريطة تدفق القيمة، تحليل الفجوات، نموذج التشغيل المستهدف، تصميم بوابة التوريد، نموذج الحالات والمسؤوليات، مقترح معمارية Power Platform، عروض تنفيذية ثنائية اللغة، وخارطة طريق التنفيذ.",
+      en:"AS-IS / TO-BE process maps, value stream map, gap analysis, Target Operating Model, Sourcing Gate design, state and ownership model, Power Platform architecture proposal, bilingual executive presentations, and an implementation roadmap."
+    },
+    outcome:{
+      ar:"اكتمل التحليل وسُلّمت حزمة التصميم المقترح للمراجعة الإدارية. المشروع في حالته الراهنة تحليل ونموذج تشغيلي مقترح، وليس نظامًا مطبقًا.",
+      en:"The analysis is complete and the proposed design package was delivered for management review. In its current state, this is an analysis and a proposed operating model — not an implemented system."
+    },
+    conf:{
+      ar:"الأرقام المعروضة تقريبية، والمخطط التوضيحي مجهول البيانات ولا يمثل نظام الشركة حرفيًا.",
+      en:"Figures shown are approximate; the diagram is anonymized and does not reproduce the company's internal system verbatim."
+    }
+  },
+  {
+    id:"contracts",
+    tag:{ar:"ذكاء الأعمال",en:"Business Intelligence"},
+    status:{ar:"لوحة مطوَّرة",en:"Developed Dashboard"},
+    title:{ar:"لوحة تحليل ومراقبة عقود المعدات",en:"Equipment Contracts Monitoring Dashboard"},
+    summary:{
+      ar:"لوحة Power BI لتحليل محفظة عقود تأجير المعدات: حالات العقود، توزيع الانتهاء، نشاط الملاحق، وجودة البيانات — بمؤشرات تُحدَّث مع كل تحديث للبيانات.",
+      en:"A Power BI dashboard for analyzing the equipment lease portfolio: contract status, expiry distribution, addendum activity, and data quality — with indicators updated on each data refresh."
+    },
+    metric:{ar:"+140 سجل عقد",en:"140+ contract records"},
+    role:{
+      ar:"بدأ العمل بتدقيق النموذج الدلالي القائم لعقود الإدارة، ثم تطوّر إلى تطوير لوحة مراقبة جديدة: تحويلات Power Query، مقاييس DAX تطبيقية، معالجة التواريخ الهجرية/الميلادية، فصل العقود الأصلية عن الملاحق، إزالة التكرار، وقواعد جودة البيانات.",
+      en:"The work began as an audit of the division's existing contracts semantic model, then evolved into developing a new monitoring dashboard: Power Query transformations, applied DAX measures, Hijri/Gregorian date handling, original-vs-addendum separation, deduplication, and data-quality rules."
+    },
+    context:{
+      ar:"محفظة عقود تأجير معدات بنشاط ملاحق مرتفع، كانت تقاريرها الإدارية تعتمد على نموذج دلالي قائم يحتاج إلى تدقيق وتطوير.",
+      en:"An equipment lease portfolio with high addendum activity, whose management reporting relied on an existing semantic model that needed auditing and further development."
+    },
+    challenge:{
+      ar:"منطق انتهاء مجمّد في أعمدة ثابتة لا تتحدث تلقائيًا، وخطر احتساب مزدوج بسبب اختلاط العقود الأصلية بالملاحق والتكرارات، وغياب مؤشر موحد لصحة العقود وجودة البيانات.",
+      en:"Expiry logic frozen in static columns that never refreshed, a duplicate-counting risk from mixing original contracts with addenda and duplicates, and no unified view of contract health and data quality."
+    },
+    scope:{
+      ar:["محفظة عقود التأجير كاملة — أكثر من 140 سجل عقد (رقم تقريبي).","النموذج الدلالي، منطق التحويل، وقواعد جودة البيانات.","تقارير إدارية ثنائية اللغة."],
+      en:["The full lease portfolio — 140+ contract records (approximate).","The semantic model, transformation logic, and data-quality rules.","Bilingual management reporting."]
+    },
+    approach:{
+      ar:["المرحلة الأولى: تدقيق النموذج القائم وتوثيق نتائج التدقيق ومواطن الخلل.","المرحلة الثانية: تطوير لوحة مراقبة جديدة بمنطق موثق.","تحويل منطق الانتهاء إلى مقاييس DAX تعتمد على تاريخ التحديث بدل الأعمدة المجمّدة.","معالجة مزدوجة للتواريخ الهجرية والميلادية عبر النموذج.","فصل العقود الأصلية عن الملاحق ومنطق إزالة تكرار لتصحيح الاحتساب.","توثيق قواعد الأعمال وضوابط جودة البيانات كمكتبة مرجعية."],
+      en:["Phase one: audited the existing model, documenting findings and failure points.","Phase two: developed a new monitoring dashboard on documented logic.","Converted expiry logic to refresh-date-based DAX measures instead of frozen columns.","Dual Hijri/Gregorian date handling across the model.","Original-vs-addendum separation and deduplication logic to correct counting.","Documented business rules and data-quality controls as a reference library."]
+    },
+    findings:{
+      ar:["تركّز غير اعتيادي في نشاط الملاحق أُبرز للمراجعة الإدارية.","تكرارات مؤثرة في السجلات كانت تعرّض الاحتساب للازدواجية.","منطق انتهاء مجمّد كان يعرض أرقامًا قديمة."],
+      en:["An unusual addendum concentration surfaced for management review.","Material duplication in records that exposed counts to double-counting.","Frozen expiry logic that had been showing stale figures."]
+    },
+    solution:{
+      ar:"لوحة مراقبة عقود تعتمد على تحديث البيانات: مؤشرات صحة وحالات وانتهاء تُحدَّث مع كل تحديث، فوق منطق موثق لفصل الملاحق وإزالة التكرار وقواعد جودة بيانات.",
+      en:"A refresh-based contract monitoring dashboard: health, status, and expiry indicators updated with each data refresh, on top of documented addendum-separation, deduplication, and data-quality logic."
+    },
+    tools:{ar:["Power BI","Power Query","DAX تطبيقي","مستخرجات Oracle","قواعد جودة البيانات"],en:["Power BI","Power Query","Applied DAX","Oracle Data Extracts","Data-Quality Rules"]},
+    deliverables:{
+      ar:"لوحة مراقبة تفاعلية، مكتبة قواعد أعمال موثقة، ضوابط جودة بيانات، وتقارير إدارية ثنائية اللغة.",
+      en:"An interactive monitoring dashboard, a documented business-rules library, data-quality controls, and bilingual management reports."
+    },
+    outcome:{
+      ar:"مراقبة عقود مبنية على تحديث البيانات، واتساق أعلى في التقارير الإدارية، وإبراز تركّز الملاحق غير الاعتيادي للمراجعة الإدارية، مع تقليل مخاطر الاحتساب المزدوج ومنطق الانتهاء المجمّد.",
+      en:"Refresh-based contract monitoring, improved consistency of management-level reporting, an unusual addendum concentration surfaced for management review, and a reduced risk of duplicate counting and frozen expiry logic."
+    },
+    conf:{
+      ar:"العرض المصاحب Mockup توضيحي مجهول البيانات وليس لقطة شاشة من نظام الشركة.",
+      en:"The accompanying visual is an anonymized illustrative mockup, not a screenshot of the company's system."
+    }
+  },
+  {
+    id:"rent-vs-own",
+    tag:{ar:"تحليلات الأصول",en:"Asset Analytics"},
+    status:{ar:"تحليل أولي",en:"Preliminary Analysis"},
+    title:{ar:"تحليل أولي للتملك مقابل الاستئجار لفئات مختارة من المعدات",en:"Preliminary Rent vs. Own Analysis for Selected Equipment Categories"},
+    summary:{
+      ar:"مقارنة أولية موثقة بين الإنفاق الإيجاري المتكرر واعتبارات التملك لفئات مختارة من المعدات، لتوجيه النقاش قبل أي قرار مالي نهائي.",
+      en:"A documented preliminary comparison between recurring rental exposure and ownership considerations for selected equipment categories, intended to guide discussion before any final financial decision."
+    },
+    metric:{ar:"فئات معدات مختارة",en:"Selected equipment categories"},
+    role:{
+      ar:"حللتُ تركيبة الأسطول عبر مواقع متعددة، وحددتُ الفئات الأعلى إنفاقًا إيجاريًا، وبنيتُ إطار مقارنة موثقًا بين خيارَي الاستئجار والتملك مع التحقق من الأرقام من أكثر من مصدر، وأعددتُ العرض التنفيذي.",
+      en:"Analyzed fleet composition across multiple sites, identified the highest rental-spend categories, built a documented Rent vs. Own comparison framework with figures verified from multiple sources, and prepared the executive presentation."
+    },
+    context:{
+      ar:"إنفاق إيجاري متكرر على فئات معدات معينة، دون تحليل موثق يوجّه نقاش التملك مقابل الاستئجار.",
+      en:"Recurring rental spend on certain equipment categories, with no documented analysis to guide the rent-vs-own discussion."
+    },
+    challenge:{
+      ar:"غياب أساس مقارن موثق: أي الفئات تستحق دراسة التملك؟ وما العوامل التشغيلية التي يجب وزنها قبل أي رقم مالي نهائي؟",
+      en:"No documented comparative basis: which categories warrant an ownership review, and which operational factors must be weighed before any final financial figure?"
+    },
+    scope:{
+      ar:["فئات معدات مختارة ذات إنفاق إيجاري متكرر.","مواقع ومدن متعددة.","عوامل تتطلب تحققًا نهائيًا: الاستخدام، الصيانة، التوافر، والقيمة المتبقية."],
+      en:["Selected equipment categories with recurring rental spend.","Multiple sites and cities.","Factors requiring final validation: utilization, maintenance, availability, and residual value."]
+    },
+    approach:{
+      ar:["تحديد الفئات الأعلى تعرضًا إيجاريًا من بيانات تركيبة الأسطول.","بناء إطار مقارنة لكل فئة بين الاستئجار المتكرر واعتبارات التملك.","التحقق من الأرقام من أكثر من مصدر قبل اعتمادها في المقارنة.","توثيق حدود التحليل والافتراضات التي تتطلب تحققًا ماليًا نهائيًا."],
+      en:["Identified the highest rental-exposure categories from fleet composition data.","Built a per-category comparison framework between recurring rental and ownership considerations.","Verified figures from multiple sources before using them in the comparison.","Documented the analysis limits and assumptions requiring final financial validation."]
+    },
+    findings:{
+      ar:["فرص تحسين تكلفة محتملة في فئات معدات مختارة.","تفاوت واضح بين الفئات في جدوى دراسة التملك.","عوامل تشغيلية (استخدام، صيانة، توافر) حُددت كعوامل تتطلب تحققًا قبل أي مقارنة نهائية."],
+      en:["Potential cost-optimization opportunities in selected equipment categories.","Clear variation between categories in how much an ownership review is warranted.","Operational factors (utilization, maintenance, availability) identified as requiring validation before any final comparison."]
+    },
+    solution:{
+      ar:"إطار مقارنة موثق للتملك مقابل الاستئجار يحدد الفئات المرشحة وعوامل الوزن، ويوجه خطوة التحقق المالي والتشغيلي النهائية.",
+      en:"A documented Rent vs. Own comparison framework identifying candidate categories and weighting factors, directing the final financial and operational validation step."
+    },
+    tools:{ar:["Excel — نمذجة المقارنة","Power BI","Python"],en:["Excel — comparison modeling","Power BI","Python"]},
+    deliverables:{
+      ar:"تحليل مقارن موثق للتملك مقابل الاستئجار، وعرض تنفيذي للفئات المرشحة.",
+      en:"A documented Rent vs. Own comparative analysis and an executive presentation of candidate categories."
+    },
+    outcome:{
+      ar:"تم تحديد فرص تحسين تكلفة محتملة في فئات معدات مختارة — تخضع للتحقق المالي والتشغيلي النهائي. المشروع تحليل أولي وليس دراسة جدوى نهائية.",
+      en:"Identified potential cost-optimization opportunities in selected equipment categories — subject to final financial and operational validation. This is a preliminary analysis, not a final feasibility study."
+    },
+    conf:{
+      ar:"لا تُعرض أي أرقام مالية في هذه النسخة العامة.",
+      en:"No financial figures are shown in this public version."
+    }
+  },
+  {
+    id:"oracle",
+    tag:{ar:"هندسة البيانات والأتمتة",en:"Data Engineering & Automation"},
+    status:{ar:"معالجة شبه آلية",en:"Semi-Automated Workflow"},
+    title:{ar:"تنظيف ومعالجة مستخرجات Oracle لدعم تقارير Power BI",en:"Oracle Extract Cleaning & Semi-Automation for Power BI Reporting"},
+    summary:{
+      ar:"نصوص Python قابلة لإعادة الاستخدام لتنظيف مستخرجات Oracle المتكررة وتوحيد بنيتها والتحقق من جودتها قبل استخدامها في تقارير Power BI.",
+      en:"Reusable Python scripts that clean recurring Oracle exports, standardize their structure, and validate their quality before use in Power BI reporting."
+    },
+    metric:{ar:"عشرات الملفات المتكررة شهريًا",en:"Dozens of recurring files monthly"},
+    role:{
+      ar:"طوّرتُ نصوص Python قابلة لإعادة الاستخدام لتنظيف وتوحيد والتحقق من مستخرجات Oracle المتكررة قبل استخدامها في تقارير Power BI.",
+      en:"Developed reusable Python scripts for cleaning, standardizing, and validating recurring Oracle exports before their use in Power BI reporting."
+    },
+    context:{
+      ar:"تقارير الإدارة تعتمد على مستخرجات Oracle متكررة تصل شهريًا بصيَغ وبنى غير متسقة.",
+      en:"Management reporting depends on recurring monthly Oracle exports arriving in inconsistent formats and structures."
+    },
+    challenge:{
+      ar:"تنظيف يدوي متكرر لعشرات الملفات شهريًا، بجهد مهدور وأخطاء بشرية وجودة غير متسقة تنعكس مباشرة على مدخلات التقارير.",
+      en:"Repetitive manual cleaning of dozens of files each month — wasted effort, human error, and inconsistent quality flowing straight into reporting inputs."
+    },
+    scope:{
+      ar:["عشرات ملفات المستخرجات المتكررة شهريًا.","التحقق من البنية، التنظيف والتوحيد، وفحوصات الجودة.","تجهيز البيانات لاستخدامها في تقارير Power BI."],
+      en:["Dozens of recurring extract files monthly.","Structure validation, cleaning and standardization, and quality checks.","Preparing the data for use in Power BI reporting."]
+    },
+    approach:{
+      ar:["بناء نصوص Python (pandas) تتحقق من بنية الملفات قبل معالجتها.","توحيد الحقول والقيم وتنظيفها بقواعد معلنة وقابلة للمراجعة.","تصميم قواعد تحقق قابلة لإعادة الاستخدام بدل معالجات لمرة واحدة.","إخراج مجموعة بيانات مجهزة وموثقة لتقارير Power BI."],
+      en:["Built Python (pandas) scripts that validate file structure before processing.","Standardized and cleaned fields and values against explicit, reviewable rules.","Designed reusable validation rules instead of one-off fixes.","Produced a prepared, documented dataset for Power BI reporting."]
+    },
+    findings:{
+      ar:["أنماط أخطاء متكررة في المستخرجات يمكن اصطيادها آليًا بقواعد تحقق.","جزء كبير من جهد الإعداد اليدوي الشهري قابل للاستبدال بنصوص قابلة لإعادة الاستخدام."],
+      en:["Recurring error patterns in the extracts that validation rules can catch automatically.","A large share of the monthly manual preparation effort replaceable by reusable scripts."]
+    },
+    solution:{
+      ar:"سير عمل شبه آلي: مستخرجات Oracle ← التحقق من البنية ← التنظيف والتوحيد ← فحوصات الجودة ← مجموعة بيانات مجهزة ← Power BI.",
+      en:"A semi-automated workflow: Oracle exports → structure validation → cleaning & standardization → quality checks → prepared dataset → Power BI."
+    },
+    tools:{ar:["Python (pandas)","مستخرجات Oracle","Power BI","Power Query"],en:["Python (pandas)","Oracle Data Extracts","Power BI","Power Query"]},
+    deliverables:{
+      ar:"نصوص Python قابلة لإعادة الاستخدام، قواعد تحقق موثقة، ومجموعات بيانات مجهزة للتقارير.",
+      en:"Reusable Python scripts, documented validation rules, and prepared datasets for reporting."
+    },
+    outcome:{
+      ar:"تقليل الإعداد اليدوي المتكرر ومدخلات بيانات أكثر اتساقًا للتقارير. سير العمل شبه آلي — التشغيل والمراجعة ما زالا ضمن الدورة، وليس خط أنابيب مؤتمتًا بالكامل.",
+      en:"Reduced repetitive manual preparation and more consistent input data for reporting. The workflow is semi-automated — execution and review remain part of the cycle; it is not a fully automated pipeline."
+    },
+    conf:{
+      ar:"مخطط المعالجة توضيحي ولا يعرض أسماء أنظمة أو حقول داخلية.",
+      en:"The processing diagram is illustrative and shows no internal system or field names."
+    }
+  }
+];
+</script>

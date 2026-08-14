@@ -1,0 +1,16 @@
+# Preserve file contents byte-for-byte across platforms.
+# Everything in this package is LF except Ahmed_Alzahrani.vcf, which must keep
+# CRLF line endings (see README.txt section 4).
+
+* text=auto eol=lf
+
+# vCard: keep CRLF exactly as authored, on every platform.
+Ahmed_Alzahrani.vcf -text
+
+# Binary assets: never touch.
+*.pdf -text
+*.png -text
+*.svg -text
+*.ico -text
+*.woff  -text
+*.woff2 -text

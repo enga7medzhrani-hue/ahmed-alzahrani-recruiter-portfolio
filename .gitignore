@@ -1,0 +1,44 @@
+# --- Secrets / local environment ---
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.*
+credentials.*
+
+# --- OS cruft ---
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# --- Editor / IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+~$*
+
+# --- Python (tools/finalize_after_publish.py) ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# --- Build / temp output from the finalize step ---
+# finalize_after_publish.py writes tools/_card_en.html, tools/_card_ar.html
+# and their intermediate PDFs before producing the final card PNGs.
+tools/_card_*.html
+tools/_card_*.pdf
+*.log
+*.tmp
